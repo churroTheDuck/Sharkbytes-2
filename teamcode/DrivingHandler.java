@@ -28,7 +28,7 @@ public class DrivingHandler {
         motorBackRight = hardwareMap.get(DcMotor.class, "motorBackRight");
 
         // arm
-        motorArm = hardwareMap.get(DcMotor.class, "motorArm")
+        motorArm = hardwareMap.get(DcMotor.class, "motorArm");
     }
 
     // gameplay loop
