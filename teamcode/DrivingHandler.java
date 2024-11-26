@@ -49,10 +49,26 @@ public class DrivingHandler {
         double power = 1;
 
         // set motor powers
-        motorFrontLeft.setPower(Math.min(moveX   - moveY + rot, 1) * power);
-        motorFrontRight.setPower(Math.min(-moveX - moveY - rot, 1) * power);
-        motorBackLeft.setPower(Math.min(-moveX   - moveY + rot, 1) * power);
-        motorBackRight.setPower(Math.min(moveX   - moveY - rot, 1) * power);
+        double frontLeft = (moveX - moveY + rot)*power;
+        double frontRight = (-moveX - moveY - rot)*power;
+        double backLeft = (-moveX - moveY + rot)*power;
+        double backRight = (moveX - moveY - rot)*power;
+
+        double max = Math.max(frontLeft, frontRight);
+        max = Math.max(max, backLeft);
+        max = Math.max(max, backRight);
+
+        if (max > 1.0) {
+            frontLeft /= max;
+            frontRight /= max;
+            backLeft /= max;
+            backRight /= max;
+        }
+        
+        motorFrontLeft.setPower(frontLeft);
+        motorFrontRight.setPower(frontRight);
+        motorBackLeft.setPower(backLeft);
+        motorBackRight.setPower(backRight);
 
         // arm
         motorArm.setPower(arm);
