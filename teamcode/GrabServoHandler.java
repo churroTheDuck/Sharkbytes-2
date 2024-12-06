@@ -2,19 +2,19 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.CRServo;
 
 // grab servo handler
 public class GrabServoHandler {
-    // grab servo
-    Servo   grabServo;
+    // grab continuous servo
+    CRServo grabServo;
     boolean grabbing;
     boolean justPressed;
 
     // initialization
     public GrabServoHandler(HardwareMap hardwareMap) {
-        // set grab servo
-        grabServo = hardwareMap.get(Servo.class, "grabServo");
+        // set grab continuous servo
+        grabServo = hardwareMap.get(CRServo.class, "grabServo");
 
         // set initial state
         grabbing    = false;
@@ -30,7 +30,11 @@ public class GrabServoHandler {
 
         justPressed = gamepad1.a;
 
-        // set servo position
-        grabServo.setPosition(grabbing ? 0.65 : 0.8);
+        // set servo power for continuous servo
+        if (grabbing) {
+            grabServo.setPower(1.0);
+        } else {
+            grabServo.setPower(-1.0);
+        }
     }
 }
