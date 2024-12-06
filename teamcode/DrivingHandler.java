@@ -20,12 +20,12 @@ public class DrivingHandler {
     // initialization
     public DrivingHandler(HardwareMap hardwareMap) {
         // set front motors
-        motorFrontLeft  = hardwareMap.get(DcMotor.class, "motorFrontLeft");
-        motorFrontRight = hardwareMap.get(DcMotor.class, "motorFrontRight");
+        motorFrontLeft  = hardwareMap.get(DcMotor.class, "leftFront");
+        motorFrontRight = hardwareMap.get(DcMotor.class, "rightFront");
 
         // set back motors
-        motorBackLeft  = hardwareMap.get(DcMotor.class, "motorBackLeft");
-        motorBackRight = hardwareMap.get(DcMotor.class, "motorBackRight");
+        motorBackLeft  = hardwareMap.get(DcMotor.class, "leftBack");
+        motorBackRight = hardwareMap.get(DcMotor.class, "rightBack");
 
         // arm
         motorArm = hardwareMap.get(DcMotor.class, "motorArm");
@@ -43,11 +43,11 @@ public class DrivingHandler {
         float moveX = leftStickX;
         float moveY = rightTrigger-leftTrigger;
         float rot = rightStickX;
-        float arm = rightStickY;
+        float arm = rightStickY / 1;
 
         
         double power = 1;
-
+ 
         // set motor powers
         double frontLeft = (moveX - moveY + rot)*power;
         double frontRight = (-moveX - moveY - rot)*power;
