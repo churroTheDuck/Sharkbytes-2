@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
@@ -16,6 +17,8 @@ public class DrivingHandler {
 
     // arm
     DcMotor motorArm;
+    
+    CRServo grabServo;
 
     // initialization
     public DrivingHandler(HardwareMap hardwareMap) {
@@ -29,6 +32,8 @@ public class DrivingHandler {
 
         // arm
         motorArm = hardwareMap.get(DcMotor.class, "motorArm");
+        
+        grabServo = hardwareMap.get(CRServo.class, "grabServo");
     }
 
     // gameplay loop
@@ -43,8 +48,8 @@ public class DrivingHandler {
         float moveX = leftStickX;
         float moveY = rightTrigger-leftTrigger;
         float rot = rightStickX;
-        float arm = rightStickY / 1;
-
+        float arm = rightStickY / (float) 1.75;
+        
         
         double power = 1;
  
@@ -73,14 +78,7 @@ public class DrivingHandler {
         // arm
         motorArm.setPower(arm);
         
-        // float frontLeft = 0;
-        // float frontRight = 0;
-        // float backLeft = 0;
-        // float backRight = 0;
-        
-        // System.out.println(gamepad1.dpad_up);
-
-        // dpad control
+        grabServo.setPower(-leftStickY);
 
     }
 }
