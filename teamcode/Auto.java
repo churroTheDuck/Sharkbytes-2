@@ -156,7 +156,7 @@ public class Auto extends LinearOpMode {
         }
 
         runtime.reset();
-        moveSetPowers(0.0,0.0,0.5);
+        moveSetPowers(0.0,0.0,1.0);
         while (opModeIsActive() && (runtime.seconds() < 3/9*spqt)) {
             telemetryAprilTag();
             telemetry.update();
@@ -168,9 +168,9 @@ public class Auto extends LinearOpMode {
         }
         telemetry.update();
 
-        while (lookingTag) {
+        while (lookingTag && opModeIsActive()) {
             runtime.reset();
-            moveSetPowers(0.0,0.0,-0.5);
+            moveSetPowers(0.0,0.0,-1.0);
             while (opModeIsActive() && (runtime.seconds() < 6/9*spqt)) {
                 telemetryAprilTag();
                 telemetry.update();
@@ -182,7 +182,7 @@ public class Auto extends LinearOpMode {
             telemetry.update();
 
             runtime.reset();
-            moveSetPowers(0.0,0.0,0.5);
+            moveSetPowers(0.0,0.0,1.0);
             while (opModeIsActive() && (runtime.seconds() < 6/9*spqt)) {
                 telemetryAprilTag();
                 telemetry.update();
@@ -512,8 +512,7 @@ public class Auto extends LinearOpMode {
 
         motorFrontLeft.setPower((moveX - moveY + rot)*power);
         motorFrontRight.setPower((-moveX - moveY - rot)*power);
-        motorBackLeft.setPower((-moveX - moveY + rot)*power);
-        motorBackRight.setPower((moveX - moveY - rot)*power);
+        motorBackLeft.setPower((-moveX - moveY - rot)*power);
+        motorBackRight.setPower((moveX - moveY + rot)*power);
     }
 }
-

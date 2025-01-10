@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -20,7 +21,7 @@ public class DrivingHandler {
     // arm
     DcMotor motorArm;
     
-    CRServo grabServo;
+    Servo grabServo;
     
     boolean holdArm;
     boolean prevB;
@@ -38,7 +39,7 @@ public class DrivingHandler {
         // arm
         motorArm = hardwareMap.get(DcMotor.class, "motorArm");
         
-        grabServo = hardwareMap.get(CRServo.class, "grabServo");
+        grabServo = hardwareMap.get(Servo.class, "grabServo");
         
         holdArm = false;
         prevB = false;
@@ -77,12 +78,12 @@ public class DrivingHandler {
         double backRight = (rightStickY+leftStickX)*power;
         
         
-        grabServo.setPower((rightStickX)*power);
+        grabServo.setPosition(0.5 * (rightStickX + 1));
         float y = gamepad1.y ? 1 : 0;
         float a = gamepad1.a ? 1 : 0;
         double servoSpeed = y - a;
         //grabServo.setPower(servoSpeed);
-        telemetry.addData("servo", servoSpeed);
+        //telemetry.addData("servo", servoSpeed);
         
         // if (gamepad1.y) {
         //      grabServo.setPower(1.0);
@@ -114,3 +115,6 @@ public class DrivingHandler {
         prevB = gamepad1.b;
     }
 }
+
+
+

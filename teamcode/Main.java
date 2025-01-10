@@ -28,7 +28,7 @@ public class Main extends OpMode {
     // gameplay loop
     public void loop() {
         // run handlers
-        drivingHandler.loop(gamepad1);
+        drivingHandler.loop(gamepad1, telemetry);
         grabServoHandler.loop(gamepad1);
         telemetry.addData("status", "running");
         telemetry.update();
