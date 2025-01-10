@@ -1,4 +1,3 @@
-
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -41,7 +40,7 @@ import java.util.List;
  */
 
 @Autonomous(name="Auto Drive By Time and AprilTags")
-public class RobotAutoDriveByTimeAndTags_Linear_ extends LinearOpMode {
+public class Auto extends LinearOpMode {
 
     // front motors
     DcMotor motorFrontLeft;
@@ -139,22 +138,153 @@ public class RobotAutoDriveByTimeAndTags_Linear_ extends LinearOpMode {
          */
 
         
-        double spi = 0.1; // seconds per inch at power set in function
-        double spqt = 1.5; // seconds per quarter turn at power set in function
+        double spi = 0.04167; // seconds per inch at power set in function
+        double spqt = 1.6; // seconds per quarter turn at power set in function
+        
+        boolean setUpRight = false;
+        boolean lookingTag = true;
 
-        // Step 1:  move away from wall and flip arm
+        boolean planZ = true; // set true of false to pick between plan z and y
+
+        // move back and look for tag
         runtime.reset();
-        moveSetPowers(0.0,1.0,0.0);
-        motorArm.setPower((float) -1.0)
-        while (opModeIsActive() && (runtime.seconds() < 1.5)) { // make the time enogh to get the arm over
-            telemetryAprilTag()
+        moveSetPowers(0.0,-0.5,0.0);
+        motorArm.setPower((double) 0.0);
+        while (opModeIsActive() && (runtime.seconds() < 24.0*spi)) { // make the time enogh to get the arm over
+            telemetryAprilTag();
             telemetry.update();
         }
+
+        runtime.reset();
+        moveSetPowers(0.0,0.0,0.5);
+        motorArm.setPower((double) 0.0);
+        while (opModeIsActive() && (runtime.seconds() < 3/9*spqt)) { // make the time enogh to get the arm over
+            telemetryAprilTag();
+            telemetry.update();
+        }
+        
+        if (telemetryAprilTag() != -1) {
+            setUpRight = true;
+            lookingTag = false;
+        }
+        telemetry.update();
+
+        while (lookingTag) {
+            runtime.reset();
+            moveSetPowers(0.0,0.0,-0.5);
+            motorArm.setPower((double) 0.0);
+            while (opModeIsActive() && (runtime.seconds() < 6/9*spqt)) { // make the time enogh to get the arm over
+                telemetryAprilTag();
+                telemetry.update();
+            }
+            if (telemetryAprilTag() != -1) {
+                setUpRight = true;
+                lookingTag = false;
+            }
+            telemetry.update();
+
+            runtime.reset();
+            moveSetPowers(0.0,0.0,0.5);
+            motorArm.setPower((double) 0.0);
+            while (opModeIsActive() && (runtime.seconds() < 6/9*spqt)) { // make the time enogh to get the arm over
+                telemetryAprilTag();
+                telemetry.update();
+            }
+            if (telemetryAprilTag() != -1) {
+                setUpRight = false;
+                lookingTag = false;
+            }
+            telemetry.update();
+        }
+
+        telemetry.addData("setUpRight", setUpRight);
+        telemetry.update();
+        sleep(100000000);
+        // Step 1:  move away from wall and flip arm
+        if (setUpRight) {
+            
+            runtime.reset();
+            moveSetPowers(0.0,0.0,-0.5);
+            motorArm.setPower((double) 0.25);
+            while (opModeIsActive() && (runtime.seconds() < spqt)) { // make the time enogh to get the arm over
+                telemetryAprilTag();
+                telemetry.update();
+            }
+            
+            
+        } else {
+            runtime.reset();
+            moveSetPowers(0.0,0.5,0.0);
+            motorArm.setPower((double) 0.0);
+            while (opModeIsActive() && (runtime.seconds() < 12.0*spi)) { // make the time enogh to get the arm over
+                telemetryAprilTag();
+                telemetry.update();
+            }
+            
+            runtime.reset();
+            moveSetPowers(0.0,0.0,0.0);
+            motorArm.setPower((double) -0.7);
+            while (opModeIsActive() && (runtime.seconds() < 0.7)) { // make the time enogh to get the arm over
+                telemetryAprilTag();
+                telemetry.update();
+            }
+            
+            runtime.reset();
+            moveSetPowers(0.0,0.0,0.0);
+            motorArm.setPower((double) 0.0);
+            while (opModeIsActive() && (runtime.seconds() < 0.7)) { // make the time enogh to get the arm over
+                telemetryAprilTag();
+                telemetry.update();
+            }
+            
+            runtime.reset();
+            moveSetPowers(0.0,0.0,0.0);
+            motorArm.setPower((double) 0.25);
+            while (opModeIsActive() && (runtime.seconds() < 2)) { // make the time enogh to get the arm over
+                telemetryAprilTag();
+                telemetry.update();
+            }
+            
+            runtime.reset();
+            moveSetPowers(0.0,0.0,0.5);
+            motorArm.setPower((double) 0.25);
+            while (opModeIsActive() && (runtime.seconds() < spqt)) { // make the time enogh to get the arm over
+                telemetryAprilTag();
+                telemetry.update();
+            }
+            
+            runtime.reset();
+            moveSetPowers(0.0,0.5,0.0);
+            motorArm.setPower((double) 0.25);
+            while (opModeIsActive() && (runtime.seconds() < 3.5*12*spi)) { // make the time enogh to get the arm over
+                telemetryAprilTag();
+                telemetry.update();
+            }
+            
+            runtime.reset();
+            moveSetPowers(0.0,0.0,-0.5);
+            motorArm.setPower((double) 0.25);
+            while (opModeIsActive() && (runtime.seconds() < spqt)) { // make the time enogh to get the arm over
+                telemetryAprilTag();
+                telemetry.update();
+            }
+            
+            runtime.reset();
+            moveSetPowers(0.0,-0.5,0.0);
+            motorArm.setPower((double) 0.25);
+            while (opModeIsActive() && (runtime.seconds() < 12.0*spi)) { // make the time enogh to get the arm over
+                telemetryAprilTag();
+                telemetry.update();
+            }
+        }
+        
+            
+
 
         // I need to add all of the steps here
 
         // stop
-        moveSetPowers(0.0,0.0,0.0)
+        moveSetPowers(0.0,0.0,0.0);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -234,10 +364,13 @@ public class RobotAutoDriveByTimeAndTags_Linear_ extends LinearOpMode {
     /**
      * Add telemetry about AprilTag detections.
      */
-    private void telemetryAprilTag() {
+    private int telemetryAprilTag() {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
+        
+        double minDist = 0.0;
+        int id = -1;
 
         // Step through the list of detections and display info for each one.
         for (AprilTagDetection detection : currentDetections) {
@@ -251,6 +384,7 @@ public class RobotAutoDriveByTimeAndTags_Linear_ extends LinearOpMode {
                         detection.robotPose.getOrientation().getPitch(AngleUnit.DEGREES),
                         detection.robotPose.getOrientation().getRoll(AngleUnit.DEGREES),
                         detection.robotPose.getOrientation().getYaw(AngleUnit.DEGREES)));
+                id = detection.id;
             } else {
                 telemetry.addLine(String.format("\n==== (ID %d) Unknown", detection.id));
                 telemetry.addLine(String.format("Center %6.0f %6.0f   (pixels)", detection.center.x, detection.center.y));
@@ -260,6 +394,8 @@ public class RobotAutoDriveByTimeAndTags_Linear_ extends LinearOpMode {
         // Add "key" information to telemetry
         telemetry.addLine("\nkey:\nXYZ = X (Right), Y (Forward), Z (Up) dist.");
         telemetry.addLine("PRY = Pitch, Roll & Yaw (XYZ Rotation)");
+
+        return id;
 
     }   // end method telemetryAprilTag()
 
