@@ -26,6 +26,8 @@ public class DrivingHandler {
     boolean holdArm;
     boolean prevB;
 
+    double servoPos;
+
     // initialization
     public DrivingHandler(HardwareMap hardwareMap) {
         // set front motors
@@ -43,6 +45,9 @@ public class DrivingHandler {
         
         holdArm = false;
         prevB = false;
+
+        servoPos = 0.0;
+        
     }
 
     // gameplay loop
@@ -76,9 +81,12 @@ public class DrivingHandler {
         double frontRight = (rightStickY-leftStickX)*power;
         double backLeft = (leftStickY-leftStickX)*power;
         double backRight = (rightStickY+leftStickX)*power;
+
+        if (gamepad1.dpad_up || gamepad1.dpad_down) {
+            servoPos = 0.5 * (gamepad1.dpad_up - gamepad1.dpad_down + 1)
+        }
         
-        
-        grabServo.setPosition(0.5 * (gamepad1.dpad_up - gamepad1.dpad_down + 1));
+        grabServo.setPosition(servoPos);
         float y = gamepad1.y ? 1 : 0;
         float a = gamepad1.a ? 1 : 0;
         double servoSpeed = y - a;
