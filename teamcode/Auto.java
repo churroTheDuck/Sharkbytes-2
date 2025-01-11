@@ -53,7 +53,7 @@ public class Auto extends LinearOpMode {
     // arm
     DcMotor motorArm;
     
-    CRServo grabServo;
+    Servo grabServo;
 
     private ElapsedTime     runtime = new ElapsedTime();
 
@@ -105,7 +105,7 @@ public class Auto extends LinearOpMode {
         // arm
         motorArm = hardwareMap.get(DcMotor.class, "motorArm");
         
-        grabServo = hardwareMap.get(CRServo.class, "grabServo");
+        grabServo = hardwareMap.get(Servo.class, "grabServo");
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");
@@ -347,7 +347,7 @@ public class Auto extends LinearOpMode {
                 runtime.reset();
                 moveSetPowers(0.0,0.0,0.0);
                 motorArm.setPower((double) -0.1);
-                grabServo.setPower((double) 1.0);
+                grabServo.setPosition((double) 0.0);
                 while (opModeIsActive() && (runtime.seconds() < 1.0)) {
                     telemetryAprilTag();
                     telemetry.update();
@@ -356,7 +356,7 @@ public class Auto extends LinearOpMode {
                 runtime.reset();
                 moveSetPowers(0.0,0.0,0.0);
                 motorArm.setPower((double) -0.1);
-                grabServo.setPower((double) -1.0);
+                grabServo.setPosition((double) 1.0);
                 while (opModeIsActive() && (runtime.seconds() < 1.0)) {
                     telemetryAprilTag();
                     telemetry.update();
@@ -365,7 +365,7 @@ public class Auto extends LinearOpMode {
                 runtime.reset();
                 moveSetPowers(0.0,-0.5,0.0);
                 motorArm.setPower((double) 0.5);
-                grabServo.setPower((double) 0.0);
+                grabServo.setPosition((double) 0.0);
                 while (opModeIsActive() && (runtime.seconds() < 0.25)) {
                     telemetryAprilTag();
                     telemetry.update();
@@ -374,7 +374,7 @@ public class Auto extends LinearOpMode {
                 runtime.reset();
                 moveSetPowers(0.0,0.0,0.5);
                 motorArm.setPower((double) 0.0);
-                grabServo.setPower((double) 0.0);
+                grabServo.setPosition((double) 1.0);
                 while (opModeIsActive() && (runtime.seconds() < 2*spqt)) {
                     telemetryAprilTag();
                     telemetry.update();
