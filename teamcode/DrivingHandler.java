@@ -78,7 +78,7 @@ public class DrivingHandler {
         double backRight = (rightStickY+leftStickX)*power;
         
         
-        grabServo.setPosition(0.5 * (rightStickX + 1));
+        grabServo.setPosition(0.5 * (gamepad1.dpad_up - gamepad1.dpad_down + 1));
         float y = gamepad1.y ? 1 : 0;
         float a = gamepad1.a ? 1 : 0;
         double servoSpeed = y - a;
