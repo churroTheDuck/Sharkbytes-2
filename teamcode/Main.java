@@ -14,13 +14,13 @@ config stuff:
 public class Main extends OpMode {
     // handlers
     DrivingHandler    drivingHandler;
-    GrabServoHandler  grabServoHandler;
+    //GrabServoHandler  grabServoHandler;
 
     // initialization
     public void init() {
         // setup handlers
         drivingHandler    = new DrivingHandler(hardwareMap);
-        grabServoHandler  = new GrabServoHandler(hardwareMap);
+        //grabServoHandler  = new GrabServoHandler(hardwareMap);
         telemetry.addData("status", "initialized");
         telemetry.update();
     }
@@ -29,7 +29,7 @@ public class Main extends OpMode {
     public void loop() {
         // run handlers
         drivingHandler.loop(gamepad1, telemetry);
-        grabServoHandler.loop(gamepad1);
+        // grabServoHandler.loop(gamepad1);
         telemetry.addData("status", "running");
         telemetry.update();
     }
