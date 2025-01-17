@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -39,8 +40,8 @@ import java.util.List;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
-@Autonomous(name="Auto Drive By Time and AprilTags")
-public class Auto extends LinearOpMode {
+@Autonomous(name="Z Start Left score and lvl 1 hang")
+public class AutoX extends LinearOpMode {
 
     // front motors
     DcMotor motorFrontLeft;
@@ -52,8 +53,9 @@ public class Auto extends LinearOpMode {
 
     // arm
     DcMotor motorArm;
-    
+
     Servo grabServo;
+    Servo tiltServo;
 
     private ElapsedTime     runtime = new ElapsedTime();
 
@@ -83,9 +85,9 @@ public class Auto extends LinearOpMode {
      */
 
     private Position cameraPosition = new Position(DistanceUnit.INCH,
-        0, 4, 3, 0);
+            0, 4, 3, 0);
     private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
-        0, -90, 0, 0);
+            0, -90, 0, 0);
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
 
@@ -104,295 +106,165 @@ public class Auto extends LinearOpMode {
 
         // arm
         motorArm = hardwareMap.get(DcMotor.class, "motorArm");
-        
+
+        tiltServo = hardwareMap.get(Servo.class, "tiltServo");
         grabServo = hardwareMap.get(Servo.class, "grabServo");
 
+        grabServo.setPosition((float) 0.5);
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Status", "Ready to run");
         telemetry.update();
         waitForStart();
 
-        // Step through each leg of the path, ensuring that the OpMode has not been stopped along the way.
+        double spi = 0.041; // seconds per inch at power set in function
+        double spqt = 0.9; // seconds per quarter turn at power set in function
+        double flipTime = 0.5; // seconds at half power to change sides
+        double flatPos = 90;
 
-        /* 
-         * a very agressive master plan for future comps:
-         * 
-         * Have the robot drive by time and then correct its self with april tag positions
-         * 30 sec to do all of this
-         * Steps in order:
-            * do once 3 sec
-                * move away from wall and move arm to correct side
-            * repeated stuff per block: 14+13
-                * 1 Set arm power to hover height 
-                * 3 drive to desired location and rotation
-                * 2 check with april tags
-                * 3 drive forward while intake servo runs
-                * 1 flip arm backwards
-                * 3 drive to basket
-                * 2 check with april tags
-                * 2 flip arm forwards
-                * 2 dispense block
-                * 1 lift arm and move back a tiny bit
+        // set up for specimen
+        telemetry.addData("Task", "set up for specimen");
+        telemetry.update();
+        runtime.reset();
+        grabServo.setPosition((float) 0.5);
+        moveSetPowers(0.0,-0.5,0.0);
+        motorArm.setPower((double) -0.5);
+        while (opModeIsActive() && (runtime.seconds() < flipTime)) {
+            telemetryAprilTag();
+            telemetry.update();
+        }
 
-                add telemetryAprilTag()
-         */
-
-        
-        double spi = 0.04167; // seconds per inch at power set in function
-        double spqt = 1.6; // seconds per quarter turn at power set in function
-        
-        boolean setUpRight = false;
-        boolean lookingTag = true;
-
-        boolean planZ = true; // set true of false to pick between plan z and y
-
-        // move back and look for tag
         runtime.reset();
         moveSetPowers(0.0,-0.5,0.0);
-        motorArm.setPower((double) 0.0);
-        while (opModeIsActive() && (runtime.seconds() < 24.0*spi)) {
+        motorArm.setPower((double) 0.25);
+        while (opModeIsActive() && (runtime.seconds() < 24.0*spi-flipTime)) {
             telemetryAprilTag();
-            telemetry.update();
-        }
-
-        runtime.reset();
-        moveSetPowers(0.0,0.0,1.0);
-        while (opModeIsActive() && (runtime.seconds() < 3/9*spqt)) {
-            telemetryAprilTag();
-            telemetry.update();
-        }
-        
-        if (telemetryAprilTag() != -1) {
-            setUpRight = true;
-            lookingTag = false;
-        }
-        telemetry.update();
-
-        while (lookingTag && opModeIsActive()) {
-            runtime.reset();
-            moveSetPowers(0.0,0.0,-1.0);
-            while (opModeIsActive() && (runtime.seconds() < 6/9*spqt)) {
-                telemetryAprilTag();
-                telemetry.update();
-            }
-            if (telemetryAprilTag() != -1) {
-                setUpRight = true;
-                lookingTag = false;
-            }
-            telemetry.update();
-
-            runtime.reset();
-            moveSetPowers(0.0,0.0,1.0);
-            while (opModeIsActive() && (runtime.seconds() < 6/9*spqt)) {
-                telemetryAprilTag();
-                telemetry.update();
-            }
-            if (telemetryAprilTag() != -1) {
-                setUpRight = false;
-                lookingTag = false;
-            }
             telemetry.update();
         }
 
         runtime.reset();
         moveSetPowers(0.0,0.0,-0.5);
-        while (opModeIsActive() && (runtime.seconds() < 3/9*spqt)) {
+        while (opModeIsActive() && (runtime.seconds() < spqt)) {
             telemetryAprilTag();
             telemetry.update();
         }
 
-        telemetry.addData("setUpRight", setUpRight);
-        telemetry.update();
+        runtime.reset();
+        tiltServo.setPosition((flatPos+(double) 90.0)/(double) 300.0)
+        moveSetPowers(0.0,-0.5,0.0);
+        while (opModeIsActive() && (runtime.seconds() < 15.0*spi)) {
+            telemetryAprilTag();
+            telemetry.update();
+        }
+
+        runtime.reset();
+        moveSetPowers(0.0,0.0,0.5);
+        while (opModeIsActive() && (runtime.seconds() < spqt)) {
+            telemetryAprilTag();
+            telemetry.update();
+        }
+
+        runtime.reset();
+        moveSetPowers(0.0,-0.5,0.0);
+        while (opModeIsActive() && (runtime.seconds() < 18.0*spi)) {
+            telemetryAprilTag();
+            telemetry.update();
+        }
+
+        // score from touching submersible
+        runtime.reset();
+        moveSetPowers(0.0,0.5,0.0);
+        while (opModeIsActive() && (runtime.seconds() < 8.0*spi)) {
+            telemetryAprilTag();
+            telemetry.update();
+        }
+
+        runtime.reset();
+        moveSetPowers(0.0,0.0,0.0);
+        motorArm.setPower((double) 0.5);
+        while (opModeIsActive() && (runtime.seconds() < flipTime)) {
+            telemetryAprilTag();
+            telemetry.update();
+        }
+
+        runtime.reset();
+        grabServo.setPosition((float) 0.2);
+        moveSetPowers(0.0,0.5,0.0);
+        motorArm.setPower((double) -0.4);
+        while (opModeIsActive() && (runtime.seconds() < flipTime)) {
+            telemetryAprilTag();
+            telemetry.update();
+        }
+
+        runtime.reset();
+        moveSetPowers(0.0,-0.5,0.0);
+        motorArm.setPower((double) 0.25);
+        while (opModeIsActive() && (runtime.seconds() < flipTime+3.0*spi)) {
+            telemetryAprilTag();
+            telemetry.update();
+        }
 
         runtime.reset();
         moveSetPowers(0.0,0.5,0.0);
-        while (opModeIsActive() && (runtime.seconds() < 9*spi)) {
+        while (opModeIsActive() && (runtime.seconds() < 6.0*spi)) {
             telemetryAprilTag();
             telemetry.update();
         }
 
-        
-
-        if (setUpRight) {
-            // plan x
-
-            runtime.reset();
-            moveSetPowers(0.0,0.0,0.5);
-            while (opModeIsActive() && (runtime.seconds() < spqt)) {
-                telemetryAprilTag();
-                telemetry.update();
-            }
-            
-            runtime.reset();
-            moveSetPowers(0.0,0.5,0.0);
-            while (opModeIsActive() && (runtime.seconds() < 45*spi)) {
-                telemetryAprilTag();
-                telemetry.update();
-            }
-            
-            runtime.reset();
-            moveSetPowers(0.0,0.0,0.5);
-            while (opModeIsActive() && (runtime.seconds() < spqt)) {
-                telemetryAprilTag();
-                telemetry.update();
-            }
-            
-            runtime.reset();
-            moveSetPowers(0.0,-0.5,0.0);
-            while (opModeIsActive() && (runtime.seconds() < 20.0*spi)) {
-                telemetryAprilTag();
-                telemetry.update();
-            }
-
-            moveSetPowers(0.0,0.0,0.0);
-            
-            
-        } else {
-
-            runtime.reset();
-            moveSetPowers(0.0,0.0,-0.5);
-            while (opModeIsActive() && (runtime.seconds() < spqt)) {
-                telemetryAprilTag();
-                telemetry.update();
-            }
-
-            if (planZ) {
-                // plan Z
-
-                runtime.reset();
-                moveSetPowers(0.0,0.5,0.0);
-                while (opModeIsActive() && (runtime.seconds() < 24*spi)) {
-                    telemetryAprilTag();
-                    telemetry.update();
-                }
-
-                runtime.reset();
-                moveSetPowers(0.0,0.0,-0.5);
-                while (opModeIsActive() && (runtime.seconds() < spqt)) {
-                    telemetryAprilTag();
-                    telemetry.update();
-                }
-
-                runtime.reset();
-                moveSetPowers(0.0,0.5,0.0);
-                while (opModeIsActive() && (runtime.seconds() < 36*spi)) {
-                    telemetryAprilTag();
-                    telemetry.update();
-                }
-
-                runtime.reset();
-                moveSetPowers(0.0,0.0,-0.5);
-                while (opModeIsActive() && (runtime.seconds() < spqt)) {
-                    telemetryAprilTag();
-                    telemetry.update();
-                }
-
-                runtime.reset();
-                moveSetPowers(0.0,0.5,0.0);
-                while (opModeIsActive() && (runtime.seconds() < 24*spi)) {
-                    telemetryAprilTag();
-                    telemetry.update();
-                }
-
-                runtime.reset();
-                moveSetPowers(0.0,0.0,0.0);
-                motorArm.setPower((double) -0.75);
-                while (opModeIsActive() && (runtime.seconds() < 1.0)) {
-                    telemetryAprilTag();
-                    telemetry.update();
-                }
-
-                runtime.reset();
-                moveSetPowers(0.0,0.0,0.0);
-                motorArm.setPower((double) -0.1);
-            } else {
-                // plan Y
-                runtime.reset();
-                moveSetPowers(0.0,0.5,0.0);
-                while (opModeIsActive() && (runtime.seconds() < 33*spi)) {
-                    telemetryAprilTag();
-                    telemetry.update();
-                }
-
-                runtime.reset();
-                moveSetPowers(0.0,0.0,-0.5);
-                while (opModeIsActive() && (runtime.seconds() < 0.5*spqt)) {
-                    telemetryAprilTag();
-                    telemetry.update();
-                }
-
-                runtime.reset();
-                moveSetPowers(0.0,0.5,0.0);
-                while (opModeIsActive() && (runtime.seconds() < 14.5*spi)) {
-                    telemetryAprilTag();
-                    telemetry.update();
-                }
-
-                runtime.reset();
-                moveSetPowers(0.0,0.5,0.0);
-                motorArm.setPower((double) 0.0);
-                while (opModeIsActive() && (runtime.seconds() < 14.5*spi)) {
-                    telemetryAprilTag();
-                    telemetry.update();
-                }
-
-                runtime.reset();
-                moveSetPowers(0.0,0.0,0.0);
-                motorArm.setPower((double) -0.75);
-                while (opModeIsActive() && (runtime.seconds() < 1.0)) {
-                    telemetryAprilTag();
-                    telemetry.update();
-                }
-
-                runtime.reset();
-                moveSetPowers(0.0,0.0,0.0);
-                motorArm.setPower((double) -0.1);
-                grabServo.setPosition((double) 0.0);
-                while (opModeIsActive() && (runtime.seconds() < 1.0)) {
-                    telemetryAprilTag();
-                    telemetry.update();
-                }
-
-                runtime.reset();
-                moveSetPowers(0.0,0.0,0.0);
-                motorArm.setPower((double) -0.1);
-                grabServo.setPosition((double) 1.0);
-                while (opModeIsActive() && (runtime.seconds() < 1.0)) {
-                    telemetryAprilTag();
-                    telemetry.update();
-                }
-
-                runtime.reset();
-                moveSetPowers(0.0,-0.5,0.0);
-                motorArm.setPower((double) 0.5);
-                grabServo.setPosition((double) 0.0);
-                while (opModeIsActive() && (runtime.seconds() < 0.25)) {
-                    telemetryAprilTag();
-                    telemetry.update();
-                }
-
-                runtime.reset();
-                moveSetPowers(0.0,0.0,0.5);
-                motorArm.setPower((double) 0.0);
-                grabServo.setPosition((double) 1.0);
-                while (opModeIsActive() && (runtime.seconds() < 2*spqt)) {
-                    telemetryAprilTag();
-                    telemetry.update();
-                }
-
-
-                moveSetPowers(0.0,0.0,0.0);
-            }
+        // going to hang
+        runtime.reset();
+        moveSetPowers(0.0,0.0,-0.5);
+        while (opModeIsActive() && (runtime.seconds() < spqt)) {
+            telemetryAprilTag();
+            telemetry.update();
         }
-        
-            
+
+        runtime.reset();
+        tiltServo.setPosition((flatPos)/(double) 300.0);
+        moveSetPowers(0.0,0.5,0.0);
+        while (opModeIsActive() && (runtime.seconds() < 36.0*spi)) {
+            telemetryAprilTag();
+            telemetry.update();
+        }
+
+        runtime.reset();
+        moveSetPowers(0.0,0.0,-0.5);
+        while (opModeIsActive() && (runtime.seconds() < spqt)) {
+            telemetryAprilTag();
+            telemetry.update();
+        }
+
+        runtime.reset();
+        moveSetPowers(0.0,0.5,0.0);
+        while (opModeIsActive() && (runtime.seconds() < 30.0*spi)) {
+            telemetryAprilTag();
+            telemetry.update();
+        }
+
+        runtime.reset();
+        moveSetPowers(0.0,0.0,-0.5);
+        while (opModeIsActive() && (runtime.seconds() < spqt)) {
+            telemetryAprilTag();
+            telemetry.update();
+        }
+
+        runtime.reset();
+        moveSetPowers(0.0,-0.5,0.0);
+        while (opModeIsActive() && (runtime.seconds() < 18.0*spi)) {
+            telemetryAprilTag();
+            telemetry.update();
+        }
+
+        runtime.reset();
+        moveSetPowers(0.0,0.0,0.0);
+        motorArm.setPower((double) 0.5);
+        while (opModeIsActive() && (runtime.seconds() < flipTime)) {
+            telemetryAprilTag();
+            telemetry.update();
+        }
 
 
-        // I need to add all of the steps here
-
-        // stop
-        // motorArm.setPower((double) 0.0);
-        // moveSetPowers(0.0,0.0,0.0);
+        motorArm.setPower((double) 0.0);
+        moveSetPowers(0.0,0.0,0.0);
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -476,7 +348,7 @@ public class Auto extends LinearOpMode {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
         telemetry.addData("# AprilTags Detected", currentDetections.size());
-        
+
         double minDist = 0.0;
         int id = -1;
 
@@ -510,8 +382,8 @@ public class Auto extends LinearOpMode {
     private void moveSetPowers(double moveX, double moveY, double rot) {
         double power = 1;
 
-        motorFrontLeft.setPower((moveX - moveY + rot)*power);
-        motorFrontRight.setPower((-moveX - moveY - rot)*power);
+        motorFrontLeft.setPower((moveX - moveY - rot)*power);
+        motorFrontRight.setPower((-moveX - moveY + rot)*power);
         motorBackLeft.setPower((-moveX - moveY - rot)*power);
         motorBackRight.setPower((moveX - moveY + rot)*power);
     }
